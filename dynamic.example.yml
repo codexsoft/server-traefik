@@ -1,0 +1,30 @@
+http:
+    services:
+        DefaultHTTPSRedirect:
+            loadBalancer:
+                servers:
+                    - url: "http://localhost/"
+    routers:
+        traefik:
+            rule: 'Host(`traefik.example.com`)'
+            service: 'api@internal'
+            tls:
+                certResolver: 'le'
+            entrypoints: ['https']
+            middlewares: ['AuthTraefik@file']
+        DefaultHTTPSRedirect:
+            entryPoints: [ "http" ]
+            rule: hostregexp(`{host:.+}`)
+            middlewares: [ "DefaultHTTPSRedirect" ]
+            service: "DefaultHTTPSRedirect"
+            priority: 1
+    middlewares:
+        AuthTraefik:
+            basicAuth:
+                users:
+                    - "admin:<htpasswd_password>"
+        DefaultGZIP:
+            compress: {}
+        DefaultHTTPSRedirect:
+            redirectScheme:
+                scheme: "https"

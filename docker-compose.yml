@@ -1,0 +1,22 @@
+version: '3.5'
+services:
+    traefik:
+        image: 'traefik:v2.0'
+        restart: always
+        container_name: traefik
+        networks:
+            - traefik-local-network
+        ports:
+            - '80:80'
+            - "443:443"
+            - '8080:8080'
+        volumes:
+            - '/var/run/docker.sock:/var/run/docker.sock'
+            - './traefik.yml:/traefik.yml'
+            - './acme.json:/acme.json'
+            - './dynamic.yml:/dynamic.yml'
+            - './logs:/host/logs'
+networks:
+    traefik-local-network:
+        external:
+            name: traefik-local-network
